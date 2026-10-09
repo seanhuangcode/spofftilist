@@ -1,0 +1,22 @@
+{
+  "name": "Spofftilist",
+  "short_name": "Spofftilist",
+  "description": "New songs picked for you, ready for when you're offline.",
+  "start_url": "/spofftilist/",
+  "scope": "/spofftilist/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "icons": [
+    {
+      "src": "/spofftilist/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/spofftilist/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
