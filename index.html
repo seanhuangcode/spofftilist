@@ -41,7 +41,46 @@
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
-  <script src="/spofftilist/_expo/static/js/web/entry-3b9750cd4f6d05639ba1c5565c354a6b.js" defer></script>
+  <script>
+(function () {
+  function def(o, k, v) { if (o && !o[k]) Object.defineProperty(o, k, { value: v, writable: true, configurable: true }); }
+  if (window.crypto && crypto.getRandomValues) {
+    def(crypto, 'randomUUID', function () {
+      var b = crypto.getRandomValues(new Uint8Array(16)), h = [];
+      b[6] = (b[6] & 15) | 64; b[8] = (b[8] & 63) | 128;
+      for (var i = 0; i < 16; i++) h.push((b[i] + 256).toString(16).slice(1));
+      return h.slice(0, 4).join('') + '-' + h.slice(4, 6).join('') + '-' + h.slice(6, 8).join('') + '-' + h.slice(8, 10).join('') + '-' + h.slice(10).join('');
+    });
+  }
+  function at(i) { var n = Math.trunc(i) || 0; if (n < 0) n += this.length; return n >= 0 && n < this.length ? this[n] : undefined; }
+  def(Array.prototype, 'at', at); def(String.prototype, 'at', at);
+  def(Array.prototype, 'findLastIndex', function (f) { for (var i = this.length - 1; i >= 0; i--) if (f(this[i], i, this)) return i; return -1; });
+  def(Array.prototype, 'findLast', function (f) { var i = this.findLastIndex(f); return i < 0 ? undefined : this[i]; });
+  def(Object, 'hasOwn', function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); });
+
+  var lastError = '';
+  function started() { var r = document.getElementById('root'); return r && r.childElementCount > 0; }
+  function showFailure() {
+    if (started() || document.getElementById('boot-error')) return;
+    var d = document.createElement('div');
+    d.id = 'boot-error';
+    d.style.cssText = 'position:fixed;inset:0;padding:48px 24px;background:#121212;color:#fff;font:15px -apple-system,sans-serif;z-index:9;overflow:auto';
+    d.innerHTML = '<h2 style="margin:0 0 12px">Spofftilist didn\'t start</h2><p style="color:#a7a7a7">Send this to Claude:</p><pre style="white-space:pre-wrap;color:#f15e6c;font-size:13px"></pre><p style="color:#a7a7a7">' + navigator.userAgent + '</p><button style="margin-top:16px;padding:12px 20px;border:0;border-radius:99px;background:#1ed760;font-weight:700">Reset and reload</button>';
+    d.querySelector('pre').textContent = lastError || 'No error message (timed out).';
+    d.querySelector('button').onclick = function () {
+      var jobs = [];
+      if (navigator.serviceWorker) jobs.push(navigator.serviceWorker.getRegistrations().then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister(); })); }));
+      if (window.caches) jobs.push(caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); }));
+      Promise.all(jobs).then(function () { location.reload(); }, function () { location.reload(); });
+    };
+    document.body.appendChild(d);
+  }
+  addEventListener('error', function (e) { lastError = (e.message || 'Error') + (e.filename ? '\n' + e.filename.split('/').pop() + ':' + e.lineno : ''); setTimeout(showFailure, 1500); });
+  addEventListener('unhandledrejection', function (e) { lastError = String(e.reason && (e.reason.stack || e.reason.message) || e.reason); setTimeout(showFailure, 1500); });
+  setTimeout(showFailure, 12000);
+})();
+</script>
+<script src="/spofftilist/_expo/static/js/web/entry-3b9750cd4f6d05639ba1c5565c354a6b.js" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
     addEventListener('load', function () {
