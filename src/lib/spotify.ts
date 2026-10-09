@@ -179,6 +179,25 @@ export class Spotify {
     await this.saveToken(tok);
   }
 
+  /** The saved login, for moving it to another device (see session.ts). */
+  get refreshToken(): string | null {
+    return this.token?.refresh_token ?? null;
+  }
+
+  /** Log in with a login moved over from another device. Throws if Spotify doesn't accept it. */
+  async useRefreshToken(refreshToken: string): Promise<void> {
+    const previous = this.token;
+    this.token = { access_token: '', refresh_token: refreshToken, scope: SCOPES.join(' '), expires_at: 0 };
+    this.meCache = null;
+    try {
+      await this.ensureToken();
+      await this.me();
+    } catch (e) {
+      this.token = previous;
+      throw e;
+    }
+  }
+
   private async ensureToken(): Promise<void> {
     if (!this.token) throw new LoginNeededError('Not logged in to Spotify.');
     if (Date.now() < this.token.expires_at) return;

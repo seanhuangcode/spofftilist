@@ -4,7 +4,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { useEffect } from 'react';
 import { AppState, Platform } from 'react-native';
 
-import { restoreLogin, spotify } from './session';
+import { loginFromAddress, restoreLogin, spotify } from './session';
 import { getLive, getState, loadState, setCurrent, setLive, visibleInbox } from './store';
 import { requestSync, syncIfStale } from './sync';
 
@@ -15,6 +15,9 @@ export function useBoot(): void {
       await loadState();
       try {
         await restoreLogin();
+        await loginFromAddress(); // opened from a "move login to your phone" link
+      } catch (e) {
+        setLive({ sync: { running: false, error: e instanceof Error ? e.message : String(e) } });
       } finally {
         setLive({ loaded: true });
       }

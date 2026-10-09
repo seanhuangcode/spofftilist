@@ -6,7 +6,9 @@ import { useEffect } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { CodeLogin } from '../components/CodeLogin';
 import { Field } from '../components/Field';
+import { spotifyLoginBroken } from '../lib/device';
 import { redirectUri } from '../lib/session';
 import { updateSettings, useStore } from '../lib/store';
 import { C, R } from '../theme';
@@ -33,6 +35,7 @@ export default function Welcome() {
   const { state, live } = useStore();
   const s = state.settings;
   const missingKeys = !s.spotifyClientId || !s.lastfmApiKey;
+  const oldPhone = spotifyLoginBroken();
 
   useEffect(() => {
     if (live.loggedIn) router.replace('/');
@@ -69,14 +72,30 @@ export default function Welcome() {
           </View>
         ) : null}
 
+        {live.sync.error ? <Text style={styles.error}>{live.sync.error}</Text> : null}
+
+        {oldPhone ? (
+          <>
+            <View style={styles.warnBox}>
+              <Ionicons name="phone-portrait-outline" size={20} color={C.amber} />
+              <Text style={styles.warnText}>
+                Spotify’s login page doesn’t load on iOS 15 (it shows a white screen). Log in on your computer and
+                move the login here instead:
+              </Text>
+            </View>
+            <CodeLogin />
+          </>
+        ) : null}
+
         <Pressable
           style={({ pressed }) => [styles.login, pressed && { backgroundColor: C.greenPressed }, missingKeys && { opacity: 0.4 }]}
           disabled={missingKeys}
           onPress={() => router.push('/login')}>
           <Ionicons name="musical-notes" size={20} color={C.onGreen} />
-          <Text style={styles.loginText}>Log in with Spotify</Text>
+          <Text style={styles.loginText}>{oldPhone ? 'Try Spotify login anyway' : 'Log in with Spotify'}</Text>
         </Pressable>
         <Text style={styles.note}>Needs Spotify Premium for offline downloads.</Text>
+        {Platform.OS === 'web' && !oldPhone ? <CodeLogin /> : null}
         {Platform.OS === 'web' ? (
           <Text style={styles.note} selectable>
             First time? Your Spotify app (developer.spotify.com/dashboard) needs this Redirect URI: {redirectUri()}
@@ -117,5 +136,17 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   loginText: { color: C.onGreen, fontSize: 17, fontWeight: '800' },
+  error: { color: C.red, fontSize: 14, marginTop: 24 },
+  warnBox: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 28,
+    padding: 14,
+    borderRadius: R.md,
+    backgroundColor: C.card,
+    borderWidth: 1,
+    borderColor: '#4a3a16',
+  },
+  warnText: { color: C.text, fontSize: 14, lineHeight: 20, flex: 1 },
   note: { color: C.faint, fontSize: 13, textAlign: 'center', marginTop: 12 },
 });

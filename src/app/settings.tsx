@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Field } from '../components/Field';
+import { LoginTransfer } from '../components/LoginTransfer';
 import { openInSpotify, timeAgo } from '../lib/links';
 import { logout, redirectUri } from '../lib/session';
 import { undo, updateSettings, useStore } from '../lib/store';
@@ -112,6 +113,15 @@ export default function Settings() {
           twice stop being suggested.
         </Text>
       </Section>
+
+      {Platform.OS === 'web' ? (
+        <Section title="Move login to your phone">
+          <Text style={styles.muted}>
+            For iPhones on iOS 15, where Spotify’s login page stays white. Do this on your computer.
+          </Text>
+          <LoginTransfer />
+        </Section>
+      ) : null}
 
       <Section title="Account">
         <Text style={styles.stat}>{state.account ? `Logged in as ${state.account.name}` : 'Logged in to Spotify'}</Text>
