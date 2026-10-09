@@ -1,25 +1,46 @@
 {
   "expo": {
-    "name": "spofftilist-tmp",
-    "slug": "spofftilist-tmp",
+    "name": "Spofftilist",
+    "slug": "spofftilist",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.seanhuang.spofftilist",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": [
+          "spotify"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#121212",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.seanhuang.spofftilist"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single",
+      "name": "Spofftilist",
+      "shortName": "Spofftilist",
+      "themeColor": "#121212",
+      "backgroundColor": "#121212",
+      "description": "New songs picked for you, ready for when you're offline."
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-font"
+    ],
+    "scheme": "spofftilist",
+    "backgroundColor": "#121212"
   }
 }
